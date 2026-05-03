@@ -16,6 +16,8 @@ public class CorsConfig {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(List.of(
                 "http://localhost:4200",
+                "http://localhost:4203",
+                "http://localhost:4204",
                 "http://localhost:8080",
                 "http://localhost:8081"
         ));
