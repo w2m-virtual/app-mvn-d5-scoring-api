@@ -7,17 +7,11 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
     consumer:
-      group-id: d5-scoring
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "*"
-        spring.json.value.default.type: com.w2m.virtual.d5scoring.scoring.domain.BookingEvent
-        spring.json.use.type.headers: false
 
 scoring:
   topic: bookings.events
+  payments-topic: payments.events
 
 management:
   endpoints:

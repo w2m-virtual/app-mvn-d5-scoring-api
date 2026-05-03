@@ -1,7 +1,9 @@
 package com.w2m.virtual.d5scoring.scoring.infrastructure.adapter.input.rest;
 
+import com.w2m.virtual.d5scoring.scoring.application.service.PaymentScoringService;
 import com.w2m.virtual.d5scoring.scoring.application.service.ScoringService;
 import com.w2m.virtual.d5scoring.scoring.domain.BookingEvent;
+import com.w2m.virtual.d5scoring.scoring.infrastructure.adapter.output.inmemory.InMemoryPaymentAggregateRepository;
 import com.w2m.virtual.d5scoring.scoring.infrastructure.adapter.output.inmemory.InMemoryScoreRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,7 +26,8 @@ class ScoringRestAdapterTest {
         svc.applyEvent(new BookingEvent(UUID.randomUUID(), supplierId, "h-1", BookingEvent.CONFIRMED, Instant.now()));
         svc.applyEvent(new BookingEvent(UUID.randomUUID(), supplierId, "h-1", BookingEvent.REJECTED, Instant.now()));
 
-        ScoringRestAdapter adapter = new ScoringRestAdapter(svc, svc);
+        PaymentScoringService payScv = new PaymentScoringService(new InMemoryPaymentAggregateRepository());
+        ScoringRestAdapter adapter = new ScoringRestAdapter(svc, svc, payScv);
         MockMvc mvc = MockMvcBuilders.standaloneSetup(adapter).build();
 
         mvc.perform(get("/api/scoring/suppliers/" + supplierId))
@@ -44,7 +47,8 @@ class ScoringRestAdapterTest {
         svc.applyEvent(new BookingEvent(UUID.randomUUID(), s1, "h", BookingEvent.CONFIRMED, Instant.now()));
         svc.applyEvent(new BookingEvent(UUID.randomUUID(), s2, "h", BookingEvent.CONFIRMED, Instant.now()));
 
-        ScoringRestAdapter adapter = new ScoringRestAdapter(svc, svc);
+        PaymentScoringService payScv = new PaymentScoringService(new InMemoryPaymentAggregateRepository());
+        ScoringRestAdapter adapter = new ScoringRestAdapter(svc, svc, payScv);
         MockMvc mvc = MockMvcBuilders.standaloneSetup(adapter).build();
 
         mvc.perform(get("/api/scoring/suppliers"))
@@ -56,7 +60,8 @@ class ScoringRestAdapterTest {
     void getUnknown_returns404() throws Exception {
         InMemoryScoreRepository repo = new InMemoryScoreRepository();
         ScoringService svc = new ScoringService(repo);
-        ScoringRestAdapter adapter = new ScoringRestAdapter(svc, svc);
+        PaymentScoringService payScv = new PaymentScoringService(new InMemoryPaymentAggregateRepository());
+        ScoringRestAdapter adapter = new ScoringRestAdapter(svc, svc, payScv);
         MockMvc mvc = MockMvcBuilders.standaloneSetup(adapter).build();
 
         mvc.perform(get("/api/scoring/suppliers/" + UUID.randomUUID()))

@@ -1,7 +1,9 @@
 package com.w2m.virtual.d5scoring.scoring.infrastructure.adapter.input.rest;
 
+import com.w2m.virtual.d5scoring.scoring.application.port.input.GetPaymentAggregateInputPort;
 import com.w2m.virtual.d5scoring.scoring.application.port.input.GetSupplierScoreInputPort;
 import com.w2m.virtual.d5scoring.scoring.application.port.input.ListSupplierScoresInputPort;
+import com.w2m.virtual.d5scoring.scoring.infrastructure.adapter.input.rest.data.ScoringDtos.PaymentAggregateResponse;
 import com.w2m.virtual.d5scoring.scoring.infrastructure.adapter.input.rest.data.ScoringDtos.SupplierScoreResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +20,14 @@ public class ScoringRestAdapter {
 
     private final GetSupplierScoreInputPort getPort;
     private final ListSupplierScoresInputPort listPort;
+    private final GetPaymentAggregateInputPort paymentsPort;
 
-    public ScoringRestAdapter(GetSupplierScoreInputPort getPort, ListSupplierScoresInputPort listPort) {
+    public ScoringRestAdapter(GetSupplierScoreInputPort getPort,
+                              ListSupplierScoresInputPort listPort,
+                              GetPaymentAggregateInputPort paymentsPort) {
         this.getPort = getPort;
         this.listPort = listPort;
+        this.paymentsPort = paymentsPort;
     }
 
     @GetMapping("/suppliers")
@@ -35,5 +41,10 @@ public class ScoringRestAdapter {
                 .map(SupplierScoreResponse::from)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/payments")
+    public PaymentAggregateResponse payments() {
+        return PaymentAggregateResponse.from(paymentsPort.get());
     }
 }

@@ -21,7 +21,8 @@ public class BookingsEventConsumer {
         this.scoringService = scoringService;
     }
 
-    @KafkaListener(topics = "${scoring.topic}", groupId = "d5-scoring")
+    @KafkaListener(topics = "${scoring.topic}", groupId = "d5-scoring",
+            containerFactory = "bookingsKafkaListenerContainerFactory")
     public void onBookingEvent(BookingEvent event) {
         try {
             log.info("BookingEvent received supplierId={} status={}", event.supplierId(), event.status());
