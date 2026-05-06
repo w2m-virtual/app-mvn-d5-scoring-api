@@ -72,4 +72,22 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(paymentsConsumerFactory());
         return factory;
     }
+
+    @Bean
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public ConsumerFactory<String, Map> hotelsConsumerFactory() {
+        Map<String, Object> props = baseProps("d5-scoring-hotels");
+        JsonDeserializer deser = new JsonDeserializer<>(LinkedHashMap.class, false);
+        deser.addTrustedPackages("*");
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deser);
+    }
+
+    @Bean(name = "hotelsKafkaListenerContainerFactory")
+    @SuppressWarnings({"rawtypes"})
+    public ConcurrentKafkaListenerContainerFactory<String, Map> hotelsKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Map> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(hotelsConsumerFactory());
+        return factory;
+    }
 }

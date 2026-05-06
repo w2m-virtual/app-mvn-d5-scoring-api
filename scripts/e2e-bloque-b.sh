@@ -14,6 +14,7 @@ set -euo pipefail
 
 D2=${D2_URL:-http://localhost:8082}
 D3=${D3_URL:-http://localhost:8083}
+D5=${D5_URL:-http://localhost:8087}
 ORQ=${ORQ_URL:-http://localhost:8080}
 KUI=${KUI_URL:-http://localhost:8090}
 
@@ -37,6 +38,14 @@ for i in 1 2 3 4 5; do
   sleep 1
   [ "$i" = "5" ] && { red "FAIL: no se vio HotelEvent en logs de d2"; exit 1; }
 done
+
+step "2.b Verificar consumers hotels.events (d3 + d5) registraron"
+sleep 2
+D3_H=$(curl -s "$D3/api/events/hotels/count" 2>/dev/null | grep -oE '[0-9]+' || echo 0)
+D5_H=$(curl -s "$D5/api/events/hotels/count" 2>/dev/null | grep -oE '[0-9]+' || echo 0)
+echo "  d3 /api/events/hotels/count=$D3_H | d5 /api/events/hotels/count=$D5_H"
+[ "$D3_H" -gt 0 ] && green "  OK · d3 procesó HotelEvent" || { red "FAIL: d3 no procesó HotelEvent"; exit 1; }
+[ "$D5_H" -gt 0 ] && green "  OK · d5 procesó HotelEvent" || { red "FAIL: d5 no procesó HotelEvent"; exit 1; }
 
 step "3. Snapshot count del orquestador antes del booking"
 COUNT_BEFORE=$(curl -s "$ORQ/api/events/bookings/count" | grep -oE '[0-9]+')

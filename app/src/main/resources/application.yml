@@ -13,6 +13,9 @@ scoring:
   topic: bookings.events
   payments-topic: payments.events
 
+hotels:
+  topic: hotels.events
+
 management:
   endpoints:
     web:
